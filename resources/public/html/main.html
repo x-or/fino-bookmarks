@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <title>Fino Bookmarks</title>
+  </head>
+  <body>
+    <div class="navbar navbar-inverse">
+      <div class="navbar-inner">
+        <a href="/" class="brand"><abbr title="Fino is not ontology">Fino</abbr> Bookmarks</a>
+        <ul class="nav">
+          <li><a href="/items">Items</a></li>
+          <li><a href="/item/create">Add item</a></li>
+          <li><a href="/domains">Domains</a></li>
+          <li><a href="/domain/create">Add domain</a></li>
+        </ul>
+        <ul class="nav pull-right">
+          <li><a href="https://github.com/x-or/fino-bookmarks">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      // This function is used to dynamically create a form and post it
+      // to the url '/item/delete/:id'.
+      //
+      function deleteItem(id)
+      {
+        var form = document.createElement("form");
+        form.setAttribute("method", "POST");
+        form.setAttribute("action", "/item/"+id+"/delete");
+        document.body.appendChild(form);
+        form.submit();
+      }
+      function labelItem(id, cat)
+      {
+        var form = document.createElement("form");
+        form.setAttribute("method", "POST");
+        form.setAttribute("action", "/item/"+id+"/label/"+cat);
+        document.body.appendChild(form);
+        form.submit();
+      }
+      function removeLabel(id, cat)
+      {
+        var form = document.createElement("form");
+        form.setAttribute("method", "POST");
+        form.setAttribute("action", "/item/"+id+"/label/"+cat+"/delete");
+        document.body.appendChild(form);
+        form.submit();
+      }
+    </script>
+    
+    <div class="container">
+      <div id="item-grid">
+        <!-- Everything inside "item-grid" will be deleted! -->
+        <ul id="item-list" class="thumbnails">
+          <li id="item-row" class="span6">
+            <div class="thumbnail" style="padding: 2%">
+              <a id="open" href="#" class="btn">Details</a> 
+              <h4 style="display: inline"><a id="title" href="#">Title Link</a></h4>
+              <p id="description">Some description text.</p>
+              <p id="label">
+                <a href="#">Label</a>
+              </p>
+              <p></p>
+            </div>
+          </li>
+        </ul>
+          
+        
+        <div class="row" id="item-show">
+          <div class="span8">
+            <div class="well well-large">
+              <!--h2><a href="#">Category domain / Item title</a></h2-->
+              <h2><a href="#">Category domain</a><span> / Item title</span></h2>
+              <p id="description">Some description text.</p>
+              <p id="uri">URI: http://example.com</p>
+              <p id="label">
+                <a href="#" class="btn btn-info">Label</a>
+              </p>
+              <p class="btn-group">
+                <a href="/items" class="btn btn-primary">Close</a>
+                <a id="edit" href="#" class="btn">Edit</a>
+                <a id="label-btn" href="#" class="btn">Label</a>
+                <a id="delete" href="#" class="btn">Delete</a>
+              </p>
+              <div id="domain-extra">
+                <h4>Categories</h4>
+                <span id="categories">
+                  <a id="category" class="btn btn-inverse">Category</a>
+                </span>
+                <a id="add-category" href="#" class="btn">Add category</a>
+              </div>
+              <div id="category-extra">
+                <h4>Used in</h4>
+                <ul>
+                  <li><a href="#">Labeled item</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        
+        <div class="row" id="item-edit">
+          <div class="span8">
+            <form action="" method="POST">
+              <div class="well well-large">
+                <h2><em>Item edit</em></h2>
+                <h3><a id="domain-location" href="#">In domain</a></h3>
+                <input name="type" id="type" type="hidden" value="0" />
+                <input name="domain-id" id="domain-id" type="hidden" />
+                <label>Title<br/>
+                  <input class="span7" name="title" id="title" type="text" /></label>
+                <label>Description (Markdown syntax)<br/>
+                <textarea class="span7" name="description" cols="40" rows="5"></textarea></label>
+                <label>URI<br/>
+                  <input class="span7" name="uri" id="uri" type="text" /></label>
+                <div class="btn-group">
+                  <input type="submit" class="btn btn-primary" value="Save"/>
+                  <a id="close" href="#" class="btn">Close</a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="row" id="item-label">
+          <div class="span8">
+            <div class="well well-large">
+              <h2>Title</h2>
+              <p id="label">
+                <span class="btn-group">
+                  <a id="title" href="#" class="btn btn-info">Label</a>
+                  <a id="remove" href="#" class="btn btn-info"><i class="icon-remove"></i></a>
+                </span>
+              </p>
+              <form action="" method="GET">
+                  <div class="input-append">
+                    <select id="appendedInputButton" name="selected-domain">
+                      <option id="domain-list-item"></option>
+                    </select>
+                    <input type="submit" class="btn" value="Select domain"/>
+                  </div><br/>
+              </form>
+              <h4>Categories</h4>
+              <p id="categories">
+                <a id="category" href="#" class="btn"></a>
+              </p>
+              <a id="close" href="#" class="btn btn-primary">Close</a>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </body>
+</html>

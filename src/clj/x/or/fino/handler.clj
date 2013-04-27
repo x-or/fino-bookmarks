@@ -1,6 +1,7 @@
 (ns x.or.fino.handler
   (:require [x.or.fino.model :as model]
             [x.or.fino.view :as view]
+            [x.or.fino.api :as api]
             [compojure.core :refer :all]
             [compojure.handler :as handler]
             [compojure.route :as route]
@@ -89,6 +90,8 @@
   (GET "/domain/:domain-id/category/create" [domain-id] (show-create-category domain-id))
   
   (GET "/category/:category-id" [category-id] (resp/redirect (str "/item/" category-id)))
+  
+  (context "/api" [] api/api-routes)
   
   (route/resources "/") 
   (route/not-found "Not Found"))

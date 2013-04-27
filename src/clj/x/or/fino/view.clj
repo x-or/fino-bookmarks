@@ -121,8 +121,10 @@
   (l/element= :option) (comp (l/content title) (l/attr :value (str id))))
 
 (l/defragment label-in-item-label-frag label-in-item-label-html [item-id {:keys [id title]}]
+  (l/element= :span) (l/attr :id (str "label-" id))
   (l/id= "title") (comp (l/attr :href (str "/item/" id)) (l/content title))
-  (l/id= "remove") (l/attr :onclick (str "removeLabel(" item-id ", " id ")")))
+  ;(l/id= "remove") (l/attr :onclick (str "removeLabel(" item-id ", " id ")"))
+  )
 
 (l/defragment category-in-label-frag category-in-label-html [item-id {:keys [id title]}]
   (l/element= :a) (comp (l/attr :onclick (str "labelItem(" item-id "," id ")")) (l/content title)))
@@ -144,34 +146,40 @@
 
 (defn show-item-list [item-list]
   (l/document main-html
+              (l/id= "script") (l/remove)
               (l/id= "item-grid")
               (l/content
                  (item-list-frag item-list))))
 
 (defn show-item [item]
   (l/document main-html
+              (l/id= "script") (l/remove)
               (l/id= "item-grid") (l/content (item-show-frag item))))
 
 (defn edit-item [item]
   (l/document main-html
+              (l/id= "script") (l/remove)
               (l/id= "item-grid")
               (l/content
                 (item-edit-frag item))))
 
 (defn show-create-item [type]
   (l/document main-html
+              (l/id= "script") (l/remove)
               (l/id= "item-grid")
               (l/content
                 (item-create-frag type nil))))
 
 (defn show-create-category [domain]
   (l/document main-html
+              (l/id= "script") (l/remove)
               (l/id= "item-grid")
               (l/content
                 (item-create-frag m/item-type-category domain))))
 
 (defn label-item [item domain-list selected-domain]
   (l/document main-html
+              (l/id= "script") (l/replace (l/unescaped "<script type=\"text/javascript\" src=\"/js/main.js\"></script>"))
               (l/id= "item-grid")
               (l/content
                 (label-frag item domain-list selected-domain))))

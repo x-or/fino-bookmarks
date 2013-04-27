@@ -25,19 +25,10 @@
        (view/show-item-list)))
 
 (defn show-item [id]
-  (view/show-item (model/load-item (pint id))))
+  (view/show-item (model/load-item (pint id)) (model/select-domain)))
 
 (defn edit-item [id]
   (view/edit-item (model/load-item (pint id))))
-
-(defn label-item [id selected-domain]
-  (let [selected-domain-item
-        (try (model/load-item (pint selected-domain))
-          (catch NumberFormatException e nil))]
-    (view/label-item
-      (model/load-item (pint id)) 
-      (model/select-domain) 
-      selected-domain-item)))
 
 (defn delete-item [id]
   (model/delete-item (pint id))
@@ -61,14 +52,6 @@
 (defn show-create-category [domain-id]
   (view/show-create-category (model/load-item (pint domain-id))))
 
-(defn add-item-label [id category-id]
-  (model/add-item-label id category-id)
-  (resp/redirect (str "/item/" id "/label")))
-
-(defn delete-item-label [id category-id]
-  (model/delete-item-label id category-id)
-  (resp/redirect (str "/item/" id "/label")))
-
 (defroutes app-routes
 
   (GET "/" [] (resp/redirect "/items"))
@@ -76,9 +59,6 @@
   (GET "/item/create" [type] (show-create-item type))
   (POST "/item/create" req (create-item (:params req)))
   (GET "/item/:id/edit" [id] (edit-item id))
-  (GET "/item/:id/label" [id selected-domain] (label-item id selected-domain))
-  (POST "/item/:id/label/:category-id" [id category-id] (add-item-label id category-id))
-  (POST "/item/:id/label/:category-id/delete" [id category-id] (delete-item-label id category-id))
   (POST "/item/:id/edit" [id title description uri] (update-item id title description uri))
   (POST "/item/:id/delete" [id] (delete-item id))
   (GET "/item/:id" [id] (show-item id))

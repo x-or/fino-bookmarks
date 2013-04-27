@@ -7,7 +7,7 @@
 ;; (repl/connect "http://localhost:9000/repl")
 
 (def item-id
-  (->> js/document .-location (re-find #"/item/(\d+)") second)
+  (->> js/document .-location (re-find #"/item/(\d+)") second))
 
 (defn show-error [self]
   (js/alert (.getLastError self)))
@@ -32,7 +32,8 @@
 (em/defsnippet label-item-label "/html/fragments.html" [:#label-item-label]
   [category-id category-title]
   [:span] (em/set-attr :id (str "label-" category-id))
-  [:#title] (em/content category-title)
+  [:#title] (em/do-> (em/set-attr :href (str "/item/" category-id))
+                     (em/content category-title))
   [:#remove] (em/do-> (em/set-attr :href "#")
                       (em/listen :click #(try-delete-item-label category-id))))
 
@@ -40,9 +41,10 @@
   [:#label] (em/append (label-item-label category-id category-title)))
 
 (defn ^:export try-label-item [category-id category-title]
-  (util/post-data-fail-safe (str "/api/item/" item-id "/label/" category-id)
-                  #(item-labeled category-id category-title)
-                  show-error))
+  (util/post-data-fail-safe 
+   (str "/api/item/" item-id "/label/" category-id)
+   #(item-labeled category-id category-title)
+   show-error))
 
 (em/defsnippet label-item-category "/html/fragments.html" [:#category]
   [{:keys [id title]}]
@@ -53,7 +55,6 @@
                
 (em/defsnippet show-categories "/html/fragments.html" [:#label-item-categories]
   [{:keys [id title categories]}]
-  [:#header] (em/content title " categories")
   [:#categories] (em/content (doall (map label-item-category categories))))
 
 (em/defaction domain-selected [item]

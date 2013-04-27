@@ -24,15 +24,12 @@
 (def label-in-list-html (l/select main-html (l/descendant-of (l/id= "item-row") (l/id= "label") (l/element= :a))))
 (def item-show-html (l/select main-html (l/id= "item-show")))
 (def item-edit-html (l/select main-html (l/id= "item-edit")))
-(def label-in-show-html (l/select main-html (l/descendant-of (l/id= "item-show") (l/id= "label") (l/element= :a))))
+(def domain-list-item-html (l/select main-html (l/id= "domain-list-item")))
+(def label-in-show-html (l/select main-html (l/descendant-of (l/id= "item-show") (l/id= "label") (l/element= :span))))
 (def domain-show-extra-html (l/select main-html (l/descendant-of (l/id= "item-show") (l/id= "domain-extra"))))
 (def category-show-extra-html (l/select main-html (l/descendant-of (l/id= "item-show") (l/id= "category-extra"))))
 (def category-in-domain-html (l/select main-html (l/descendant-of  (l/id= "item-show") (l/id= "domain-extra") (l/id= "category"))))
 (def labeled-item-html (l/select main-html (l/descendant-of  (l/id= "item-show") (l/id= "category-extra") (l/element= :li))))
-(def label-html (l/select main-html (l/id= "item-label")))
-(def domain-list-item-html (l/select main-html (l/id= "domain-list-item")))
-(def label-in-item-label-html (l/select main-html (l/descendant-of (l/id= "item-label") (l/id= "label") (l/element= :span))))
-(def category-in-label-html (l/select main-html (l/descendant-of (l/id= "item-label") (l/id= "category"))))
 
 
 ;; Used to show an item in the resources list
@@ -54,8 +51,11 @@
 ;; Shows item details
 ;; Path: /item/:id
 
-(l/defragment label-in-show-frag label-in-show-html [{:keys [id title]}]
-  (l/element= :a) (comp (l/attr :href (str "/category/" id)) (l/content title)))
+(l/defragment label-in-show-frag label-in-show-html [item-id {:keys [id title]}]
+  (l/element= :span) (l/attr :id (str "label-" id))
+  (l/id= "title") (comp (l/attr :href (str "/item/" id)) (l/content title))
+  ;(l/id= "remove") (l/attr :onclick (str "removeLabel(" item-id ", " id ")"))
+  )
 
 (l/defragment category-in-domain-frag category-in-domain-html [domain-id {:keys [id title label-count]}]
   (l/element= :a) (comp 
@@ -66,13 +66,17 @@
   (l/id= "categories") (l/content (for [category categories] [(category-in-domain-frag id category) " "]))
   (l/id= "add-category") (l/attr :href (str "/domain/" id "/category/create")))
 
+(l/defragment domain-list-item-frag domain-list-item-html [{:keys [id title]}]
+  (l/element= :option) (comp (l/content title) (l/attr :value (str id))))
+
 (l/defragment labeled-item-frag labeled-item-html [{:keys [id title]}]
   (l/element= :a) (comp (l/attr :href (str "/item/" id)) (l/content title)))
 
 (l/defragment item-category-show-frag category-show-extra-html [id title labeled-items]
   (l/element= :ul) (l/content (for [l labeled-items] (labeled-item-frag l))))
 
-(l/defragment item-show-frag item-show-html [{:keys [id title description uri type domain categories label labeled-items]}]
+(l/defragment item-show-frag item-show-html 
+  [{:keys [id title description uri type domain categories label labeled-items ]} domain-list]
   (l/descendant-of (l/element= :h2) (l/element= :a)) (if (not= type m/item-type-category)
                                                        (l/remove)
                                                        (comp (l/content (:title domain))
@@ -80,9 +84,9 @@
   (l/descendant-of (l/element= :h2) (l/element= :span)) (l/content [(if (= type m/item-type-category) " / " nil) title])
   (l/id= "description") (l/content (md->frag description))
   (l/id= "uri") (l/content (format-uri uri))
-  (l/id= "label") (l/content (for [l label] [(label-in-show-frag l) " "]))
+  (l/id= "label") (l/content (for [l label] [(label-in-show-frag id l) " "]))
+  (l/element= :select) (l/content (for [domain domain-list] (domain-list-item-frag domain)))
   (l/id= "edit") (l/attr :href (str "/item/" id "/edit"))
-  (l/id= "label-btn") (l/attr :href (str "/item/" id "/label"))
   (l/id= "delete") (l/attr :onclick (str "deleteItem(" id ")"))
   (l/id= "domain-extra") (l/content (if (not= type m/item-type-domain) nil (item-domain-show-frag id categories)))
   (l/id= "category-extra") (l/content (if (not= type m/item-type-category) nil (item-category-show-frag id title labeled-items))))
@@ -114,31 +118,6 @@
   (l/id= "close") (l/attr :href "/items")
   (l/element= :form) (l/attr :action (str "/item/create")))
 
-;; Shows a form for item labeling
-;; Path: /item/:id/label
-
-(l/defragment domain-list-item-frag domain-list-item-html [{:keys [id title]}]
-  (l/element= :option) (comp (l/content title) (l/attr :value (str id))))
-
-(l/defragment label-in-item-label-frag label-in-item-label-html [item-id {:keys [id title]}]
-  (l/element= :span) (l/attr :id (str "label-" id))
-  (l/id= "title") (comp (l/attr :href (str "/item/" id)) (l/content title))
-  ;(l/id= "remove") (l/attr :onclick (str "removeLabel(" item-id ", " id ")"))
-  )
-
-(l/defragment category-in-label-frag category-in-label-html [item-id {:keys [id title]}]
-  (l/element= :a) (comp (l/attr :onclick (str "labelItem(" item-id "," id ")")) (l/content title)))
-
-(l/defragment label-frag label-html [{:keys [id title label]} domain-list {domain-title :title domain-categories :categories}]
-  (l/element= :h2) (l/content title)
-  (l/element= :select) (l/content (for [domain domain-list] (domain-list-item-frag domain)))
-  (l/element= :form) (l/attr :action (str "/item/" id "/label"))
-  (l/element= :h4) (l/content (str domain-title " categories"))
-  (l/id= "label") (l/content (for [l label] (label-in-item-label-frag id l)))
-  (l/id= "categories") (l/content (for [category domain-categories] (category-in-label-frag id category)))
-  (l/id= "close") (l/attr :href (str "/item/" id)))
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Pages
 
@@ -151,10 +130,10 @@
               (l/content
                  (item-list-frag item-list))))
 
-(defn show-item [item]
+(defn show-item [item domain-list]
   (l/document main-html
-              (l/id= "script") (l/remove)
-              (l/id= "item-grid") (l/content (item-show-frag item))))
+              (l/id= "script") (l/replace (l/unescaped "<script type=\"text/javascript\" src=\"/js/main.js\"></script>"))
+              (l/id= "item-grid") (l/content (item-show-frag item domain-list))))
 
 (defn edit-item [item]
   (l/document main-html
@@ -176,10 +155,3 @@
               (l/id= "item-grid")
               (l/content
                 (item-create-frag m/item-type-category domain))))
-
-(defn label-item [item domain-list selected-domain]
-  (l/document main-html
-              (l/id= "script") (l/replace (l/unescaped "<script type=\"text/javascript\" src=\"/js/main.js\"></script>"))
-              (l/id= "item-grid")
-              (l/content
-                (label-frag item domain-list selected-domain))))

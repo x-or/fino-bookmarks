@@ -36,22 +36,6 @@
         document.body.appendChild(form);
         form.submit();
       }
-      function labelItem(id, cat)
-      {
-        var form = document.createElement("form");
-        form.setAttribute("method", "POST");
-        form.setAttribute("action", "/item/"+id+"/label/"+cat);
-        document.body.appendChild(form);
-        form.submit();
-      }
-      function removeLabel(id, cat)
-      {
-        var form = document.createElement("form");
-        form.setAttribute("method", "POST");
-        form.setAttribute("action", "/item/"+id+"/label/"+cat+"/delete");
-        document.body.appendChild(form);
-        form.submit();
-      }
     </script>
     
     <div class="container">
@@ -76,18 +60,26 @@
           <div class="span8">
             <div class="well well-large">
               <!--h2><a href="#">Category domain / Item title</a></h2-->
-              <h2><a href="#">Category domain</a><span> / Item title</span></h2>
-              <p id="description">Some description text.</p>
-              <p id="uri">URI: http://example.com</p>
-              <p id="label">
-                <a href="#" class="btn btn-info">Label</a>
-              </p>
               <p class="btn-group">
                 <a href="/items" class="btn btn-primary">Close</a>
                 <a id="edit" href="#" class="btn">Edit</a>
-                <a id="label-btn" href="#" class="btn">Label</a>
                 <a id="delete" href="#" class="btn">Delete</a>
               </p>
+              <h2><a href="#">Category domain</a><span> / Item title</span></h2>
+              <p id="description">Some description text.</p>
+              <p id="uri">URI: http://example.com</p>
+              <h4>Labels</h4>
+              <p id="label">
+                <span class="btn-group">
+                  <a id="title" href="#" class="btn btn-info">Label</a>
+                  <a id="remove" href="#" class="btn btn-info"><i class="icon-remove"></i></a>
+                </span>
+              </p>
+              <select id="appendedInputButton" name="selected-domain" class="span7">
+                <option id="domain-list-item"></option>
+              </select>
+              <div id="item-label-categories-place">
+              </div>
               <div id="domain-extra">
                 <h4>Categories</h4>
                 <span id="categories">
@@ -110,6 +102,10 @@
           <div class="span8">
             <form action="" method="POST">
               <div class="well well-large">
+                <div class="btn-group">
+                  <input type="submit" class="btn btn-primary" value="Save"/>
+                  <a id="close" href="#" class="btn">Close</a>
+                </div>
                 <h2><em>Item edit</em></h2>
                 <h3><a id="domain-location" href="#">In domain</a></h3>
                 <input name="type" id="type" type="hidden" value="0" />
@@ -120,40 +116,11 @@
                 <textarea class="span7" name="description" cols="40" rows="5"></textarea></label>
                 <label>URI<br/>
                   <input class="span7" name="uri" id="uri" type="text" /></label>
-                <div class="btn-group">
-                  <input type="submit" class="btn btn-primary" value="Save"/>
-                  <a id="close" href="#" class="btn">Close</a>
-                </div>
               </div>
             </form>
           </div>
         </div>
 
-        <div class="row" id="item-label">
-          <div class="span8">
-            <div class="well well-large">
-              <h2>Title</h2>
-              <p id="label">
-                <span class="btn-group">
-                  <a id="title" href="#" class="btn btn-info">Label</a>
-                  <a id="remove" href="#" class="btn btn-info"><i class="icon-remove"></i></a>
-                </span>
-              </p>
-              <form action="" method="GET">
-                  <div class="input-append">
-                    <select id="appendedInputButton" name="selected-domain">
-                      <option id="domain-list-item"></option>
-                    </select>
-                    <input type="submit" class="btn" value="Select domain"/>
-                  </div><br/>
-              </form>
-              <div id="item-label-categories-place">
-              </div>
-              <a id="close" href="#" class="btn btn-primary">Close</a>
-            </div>
-          </div>
-        </div>
-        
       </div>
     </div>
   </body>
